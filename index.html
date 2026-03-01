@@ -15,9 +15,9 @@
   <ul id="file-list"></ul>
 
   <script>
-    const owner = "usuario";      // ejemplo: "octocat"
-    const repo = "repositorio";   // ejemplo: "Hello-World"
-    const branch = "main";        // rama principal
+    const owner = "gerismusikyt";          // tu usuario
+    const repo = "uploads.for.thinks";     // tu repo
+    const branch = "main";                 // cambia si tu rama es "master"
 
     async function fetchRepoContents(path = "") {
       const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
@@ -26,6 +26,11 @@
 
       const list = document.getElementById("file-list");
       list.innerHTML = "";
+
+      if (!Array.isArray(data)) {
+        list.innerHTML = "<li>No se pudo cargar el contenido (¿repo privado o rama incorrecta?).</li>";
+        return;
+      }
 
       data.forEach(item => {
         const li = document.createElement("li");
