@@ -15,9 +15,8 @@
   <ul id="file-list"></ul>
 
   <script>
-    // Cambia estos valores por tu repo
-    const owner = "gerismusikyt";      // ejemplo: "octocat"
-    const repo = "uploads.for.thinks";   // ejemplo: "Hello-World"
+    const owner = "usuario";      // ejemplo: "octocat"
+    const repo = "repositorio";   // ejemplo: "Hello-World"
     const branch = "main";        // rama principal
 
     async function fetchRepoContents(path = "") {
@@ -37,9 +36,9 @@
           li.onclick = () => fetchRepoContents(item.path);
         } else {
           li.onclick = () => {
-            const publicLink = `https://github.com/${owner}/${repo}/blob/${branch}/${item.path}`;
-            navigator.clipboard.writeText(publicLink);
-            alert("Copiado: " + publicLink);
+            const rawLink = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${item.path}`;
+            navigator.clipboard.writeText(rawLink);
+            alert("Copiado: " + rawLink);
           };
         }
 
@@ -47,7 +46,6 @@
       });
     }
 
-    // Cargar raíz del repo
     fetchRepoContents();
   </script>
 </body>
