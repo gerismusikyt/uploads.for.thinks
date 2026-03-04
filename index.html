@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Explorador de Repositorio</title>
+  <title>Explorador + Upload</title>
   <style>
     body { font-family: Arial, sans-serif; }
     ul { list-style-type: none; }
@@ -14,10 +14,14 @@
   <h2>Archivos del repositorio</h2>
   <ul id="file-list"></ul>
 
+  <h3>Subir archivo</h3>
+  <input type="file" id="upload" />
+
   <script>
     const owner = "gerismusikyt";          // tu usuario
     const repo = "uploads.for.thinks";     // tu repo
-    const branch = "main";                 // cambia si tu rama es "master"
+    const branch = "main";                 // cambia si tu rama es master
+    const token = "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"; // ⚠️ inseguro
 
     async function fetchRepoContents(path = "") {
       const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
@@ -28,7 +32,7 @@
       list.innerHTML = "";
 
       if (!Array.isArray(data)) {
-        list.innerHTML = "<li>No se pudo cargar el contenido (¿repo privado o rama incorrecta?).</li>";
+        list.innerHTML = "<li>No se pudo cargar el contenido.</li>";
         return;
       }
 
@@ -50,6 +54,42 @@
         list.appendChild(li);
       });
     }
+
+    // Upload inseguro
+    document.getElementById("upload").addEventListener("change", async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const content = btoa(reader.result); // convertir a Base64
+        const path = file.name;
+
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Authorization": `token ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: "Subiendo archivo desde página insegura",
+            content: content,
+            branch: branch
+          })
+        });
+
+        const data = await response.json();
+        if (data.content) {
+          const rawLink = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+          alert("Archivo subido. Raw link:\n" + rawLink);
+          fetchRepoContents(); // refrescar lista
+        } else {
+          alert("Error al subir: " + JSON.stringify(data));
+        }
+      };
+      reader.readAsBinaryString(file);
+    });
 
     fetchRepoContents();
   </script>
